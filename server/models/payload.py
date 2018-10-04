@@ -19,3 +19,4 @@ class GameDataPayload:
     def __init__(self, **kwargs):
         self.game_id = kwargs.get('game_id')
         self.position = Position(**kwargs.get('position', {}))
+        self.shoot_position = Position(**kwargs.get('shoot_position', {}))

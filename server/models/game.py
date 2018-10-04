@@ -48,35 +48,53 @@ class Game:
 
         def point_allowed(p_x, p_y):
             if p_x < 0 or p_y < 0 or p_x > self.map.width-1 or p_y > self.map.height-1:
-                return False
+                return False, None
 
             if self.map.content[str(int(p_y))][str(int(p_x))] != "0":
-                return False
+                return False, None
 
             if player_id is None:
-                return True
+                return True, None
 
             for idx in self.players:
                 player = self.players[idx]
                 if player.id != player_id:
-                    if (x in [math.ceil(player.position.x), math.floor(player.position.x)] and
-                            y in [math.ceil(player.position.y), math.floor(player.position.y)]):
-                        return False
+                    if (p_x in [math.ceil(player.position.x), math.floor(player.position.x)] and
+                            p_y in [math.ceil(player.position.y), math.floor(player.position.y)]):
+                        return False, player.id
 
-            return True
+            return True, None
 
         floor_x, ceil_x = math.floor(x), math.ceil(x)
         floor_y, ceil_y = math.floor(y), math.ceil(y)
 
-        x_ar = [floor_x, ceil_x] if x - floor_x > 0.1 else [floor_x]
-        y_ar = [floor_y, ceil_y] if y - floor_y > 0.1 else [floor_y]
+        x_ar = [floor_x, ceil_x] if x - floor_x > 0.15 else [floor_x]
+        y_ar = [floor_y, ceil_y] if y - floor_y > 0.15 else [floor_y]
 
         for xx in x_ar:
             for yy in y_ar:
-                if not point_allowed(xx, yy):
-                    return False
+                allowed, player_hit = point_allowed(xx, yy)
+                if not allowed:
+                    return False, player_hit
 
-        return True
+        return True, None
+
+    def calculate_bullet_stop(self, s_x, s_y, r, player_id) -> (Position, str):
+
+        dx = -math.sin(-r * math.pi/180)
+        dy = -math.cos(-r * math.pi/180)
+
+        while 0 < s_x < self.map.width-1 and 0 < s_y < self.map.height-1:
+            s_x += dx
+            s_y += dy
+            allowed, player_hit = self.position_allowed(math.floor(s_x), math.floor(s_y), player_id)
+            if not allowed:
+                return Position(x=s_x, y=s_y), player_hit
+
+        return Position(x=s_x, y=s_y), None
+
+    def player_destroyed(self, player):
+        pass
 
 
 def create_new_game() -> Game:

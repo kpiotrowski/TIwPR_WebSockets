@@ -46,3 +46,14 @@ html form {
 .player_tank{
     position: absolute;
 }
+
+.explosion {
+    position: absolute;
+}
+
+.projectile{
+    position: absolute;
+    background: red;
+    left: 0;
+    right: 0;
+}

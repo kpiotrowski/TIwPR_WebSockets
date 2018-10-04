@@ -33,6 +33,14 @@ class Player:
             "points": self.points
         }
 
+    def hit(self):
+        self.life -= 40
+        if self.life < 0:
+            self.life = 0
+
+    def is_destroyed(self):
+        return self.life == 0
+
 
 def create_new_player(player_id, socket, num, position: Position) -> Player:
     player = Player(id=player_id, socket=socket, name=f"Player{str(num)}")
