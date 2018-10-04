@@ -42,3 +42,7 @@ html form {
 .newGameInfo {
     color: #ccc;
 }
+
+.player_tank{
+    position: absolute;
+}

@@ -19,9 +19,10 @@ class MyServerProtocol(WebSocketServerProtocol):
 
     def onMessage(self, payload, isBinary):
         if isBinary:
-            print("Binary message received: {0} bytes".format(len(payload)))
+            pass
+            # print("Binary message received: {0} bytes".format(len(payload)))
         else:
-            print(f"Received data {payload.decode('utf8')}")
+            # print(f"Received data {payload.decode('utf8')}")
             payload = json.loads(payload.decode('utf8'))
 
         payload = Payload(**payload)
