@@ -12,7 +12,7 @@ last_shoot_time = new Date()
 
 var key_handler = function(){
     $(document).keypress(function(e){
-        if (players == null || map_content ==null ) return;
+        if (players == null || map_content ==null || my_position.x<=0) return;
 
         switch(e.which){
             case 119:
@@ -186,13 +186,13 @@ var draw_shoot = function(data){
             pos_x += dx;
             pos_y += dy;
             $('#'+uuid).css('left', parseInt(pos_x*64)).css('top', parseInt(pos_y*64))
-            if ((Math.abs(pos_x-end.x)<0.3 && Math.abs(pos_y-end.y)<0.3) || pos_x<=0 || pos_y<=0 || pos_x>=19 || pos_y>=19) {
+            if ((Math.abs(pos_x-end.x)<0.6 && Math.abs(pos_y-end.y)<0.6) || pos_x<=0 || pos_y<=0 || pos_x>=19 || pos_y>=19) {
                 $('#'+uuid).remove();
                 draw_explosion(pos_x, pos_y);
             } else {
                 draw_next_move(pos_x, pos_y);
             }
-        }, 25)
+        }, 15)
     }
     draw_next_move(start.x, start.y);
 }
@@ -223,7 +223,6 @@ var draw_explosion = function(x, y){
             counter ++;
             if (counter >=16) {
                 $('#'+uuid).remove();
-                clearInterval(interval_id);
             } else {
                 draw_next_frame(counter);
             }
@@ -241,13 +240,25 @@ var draw_players = function(data) {
 
         if( !$(".mapPlayers #player_"+player_data.id).length) {
             canvas_data = "<canvas width='80' height='80' class='player_tank' id=player_"+player_data.id+"></canvas>"
+            player_info = "<h5>"+player_data.name+"</h5><ul><li class='player_life_"+player_data.id+"'>Life: "+player_data.life+"</li><li class='player_points_"+player_data.id+"'>Points: "+player_data.points+"</li></ul>"
             $(".mapPlayers").append(canvas_data);
+            $(".stats").append(player_info);
         }
 
         move_tank_canvas($(".mapPlayers #player_"+player_data.id), player_data.position.x, player_data.position.y);
 
+
+        $('.player_life_'+player_data.id).html("Life: "+player_data.life);
+        $('.player_points_'+player_data.id).html("Points: "+player_data.points);
+
         var tank = document.getElementById("player_"+player_data.id);
-        canvas_tank_draw_rotate(tank, parseInt(player_data.position.r), player_data.id == player_id);
+
+        if (player_data.life == "DESTROYED") {
+            $("#player_"+player_data.id).hide();
+        } else {
+            $("#player_"+player_data.id).show();
+            canvas_tank_draw_rotate(tank, parseInt(player_data.position.r), player_data.id == player_id);
+        }
 
         if (player_data.id == player_id) {
             my_position = {x: parseFloat(player_data.position.x), y: parseFloat(player_data.position.y), r: parseInt(player_data.position.r) }

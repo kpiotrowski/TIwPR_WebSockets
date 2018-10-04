@@ -72,6 +72,7 @@ def handle_shoot(payload, client, game: Game, data):
         player.hit()
 
         if player.is_destroyed():
+            game.players[payload.id].points += 100
             game.player_destroyed(player)
 
     output = {
@@ -81,4 +82,5 @@ def handle_shoot(payload, client, game: Game, data):
     for player_id in game.players:
         Payload(type="DRAW_SHOOT", id=payload.id, data=output).send(game.players[player_id].socket)
 
-    game.send_positions_to_players(player_hit)
+    if player_hit:
+        game.send_positions_to_players()

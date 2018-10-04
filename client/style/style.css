@@ -53,7 +53,29 @@ html form {
 
 .projectile{
     position: absolute;
-    background: red;
+    background: #000;
+    border-radius: 3px;
     left: 0;
     right: 0;
+
+    -webkit-box-shadow: -1px 3px 15px 8px rgba(86,107,0,1);
+    -moz-box-shadow: -1px 3px 15px 8px rgba(86,107,0,1);
+    box-shadow: -1px 3px 15px 8px rgba(86,107,0,1);
+    
+}
+
+.stats {
+    position: absolute;
+    right: 0;
+    bottom: 8px;
+    padding: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.5);
+    text-align: left;
+}
+
+.stats ul li {
+    list-style: none;
 }

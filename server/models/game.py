@@ -5,6 +5,7 @@ from server.models.payload import Payload
 from server.models.player import create_new_player, Position
 from random import randint
 import math
+from threading import Timer
 
 
 class Game:
@@ -41,7 +42,8 @@ class Game:
         for _ in range(100):
             x = randint(1, self.map.width - 2)
             y = randint(1, self.map.height - 2)
-            if self.position_allowed(x, y, player_id):
+            allowed, _ = self.position_allowed(x, y, player_id)
+            if allowed:
                 return Position(x=x, y=y, r=0)
 
     def position_allowed(self, x, y, player_id=None):
@@ -50,7 +52,7 @@ class Game:
             if p_x < 0 or p_y < 0 or p_x > self.map.width-1 or p_y > self.map.height-1:
                 return False, None
 
-            if self.map.content[str(int(p_y))][str(int(p_x))] != "0":
+            if not self.map.content[str(p_y)][str(p_x)] == '0':
                 return False, None
 
             if player_id is None:
@@ -81,8 +83,8 @@ class Game:
 
     def calculate_bullet_stop(self, s_x, s_y, r, player_id) -> (Position, str):
 
-        dx = -math.sin(-r * math.pi/180)
-        dy = -math.cos(-r * math.pi/180)
+        dx = -math.sin(-r * math.pi/180)*0.4
+        dy = -math.cos(-r * math.pi/180)*0.4
 
         while 0 < s_x < self.map.width-1 and 0 < s_y < self.map.height-1:
             s_x += dx
@@ -94,7 +96,19 @@ class Game:
         return Position(x=s_x, y=s_y), None
 
     def player_destroyed(self, player):
-        pass
+        player.position.x = -10
+        player.position.y = -10
+        player.position.r = 0
+
+        player.life = "DESTROYED"
+
+        def respawn():
+            player.life = 100
+            player.position = self.find_free_place()
+            self.send_positions_to_players(player.id)
+
+        t = Timer(5, respawn)
+        t.start()
 
 
 def create_new_game() -> Game:
